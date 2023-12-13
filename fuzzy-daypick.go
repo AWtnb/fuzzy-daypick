@@ -54,7 +54,8 @@ func run(year int, month int, day int, span int) int {
 	for _, i := range idxs {
 		selected = append(selected, menu[i])
 	}
-	df := selectFormat(selected)
+	me := MenuEntry{selected}
+	df := me.preview()
 	if 0 < len(df) {
 		for _, d := range selected {
 			fmt.Printf("%v\n", d.Format(df))
@@ -64,54 +65,65 @@ func run(year int, month int, day int, span int) int {
 }
 
 func getDayMenu(start time.Time, span int) []time.Time {
-	var ds []time.Time
+	var ts []time.Time
 	for i := 0; i < span; i++ {
-		ds = append(ds, start.AddDate(0, 0, i))
+		ts = append(ts, start.AddDate(0, 0, i))
 	}
-	return ds
+	return ts
 }
 
-var FormatMap = map[string]string{
-	"MM-dd":       "01-02",
-	"MM/dd":       "01/02",
-	"MM年dd月（ddd）": "01月02日（Mon）",
+type MenuEntry struct {
+	dates []time.Time
 }
 
-// type DateEntry struct {
-// 	Dates []time.Time
-// }
-
-// func (d DateEntry) Format(fmt string) []string {
-// 	var ss []string
-// 	f := FormatMap[fmt]
-// 	for _, d := range d.Dates {
-// 		ss = append(ss, d.Format(f))
-// 	}
-// 	return ss
-// }
-
-func selectFormat(dates []time.Time) string {
-	var fmts []string
-	for k := range FormatMap {
-		fmts = append(fmts, k)
+func (m MenuEntry) getTable() map[string]string {
+	return map[string]string{
+		"MM-dd":            "01-02",
+		"MM/dd":            "01/02",
+		"MM月dd日（ddd）":      "01月02日（Mon）",
+		"M月d日（ddd）":        "1月2日（Mon）",
+		"YYYY-MM-dd":       "2006-01-02",
+		"YYYY/MM/dd":       "2006/01/02",
+		"YYYY年MM月dd日（ddd）": "2006年01月02日（Mon）",
+		"YYYY年M月d日（ddd）":   "2006年1月2日（Mon）",
 	}
-	sort.Strings(fmts)
+}
+
+func (m MenuEntry) applyFormat(fmt string) []string {
+	var ss []string
+	for _, d := range m.dates {
+		ss = append(ss, d.Format(fmt))
+	}
+	return ss
+}
+
+func (m MenuEntry) getCommonFormats() []string {
+	var ss []string
+	for f := range m.getTable() {
+		ss = append(ss, f)
+	}
+	sort.Strings(ss)
+	return ss
+}
+
+func (m MenuEntry) toGoFormat(commonFmt string) string {
+	return m.getTable()[commonFmt]
+}
+
+func (m MenuEntry) preview() string {
+	fmts := m.getCommonFormats()
 	idx, err := fuzzyfinder.Find(fmts, func(i int) string {
 		return fmts[i]
-	}, fuzzyfinder.WithPreviewWindow(func(i, w, h int) string {
+	}, fuzzyfinder.WithPreviewWindow(func(i, _, _ int) string {
 		if i == -1 {
 			return ""
 		}
-		f := FormatMap[fmts[i]]
-		var ds []string
-		for _, d := range dates {
-			ds = append(ds, d.Format(f))
-		}
-		return strings.Join(ds, "\n")
+		f := m.toGoFormat(fmts[i])
+		return strings.Join(m.applyFormat(f), "\n")
 	}))
 	if err != nil {
 		fmt.Println(err)
 		return ""
 	}
-	return FormatMap[fmts[idx]]
+	return m.toGoFormat(fmts[idx])
 }
