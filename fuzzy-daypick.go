@@ -38,13 +38,13 @@ func main() {
 
 func toJpDate(s string) string {
 	wj := strings.NewReplacer(
-		"Sun", "日",
-		"Mon", "月",
-		"Tue", "火",
-		"Wed", "水",
-		"Thu", "木",
-		"Fri", "金",
-		"Sat", "土",
+		"Sunday", "日",
+		"Monday", "月",
+		"Tuesday", "火",
+		"Wednesday", "水",
+		"Thursday", "木",
+		"Friday", "金",
+		"Saturday", "土",
 	)
 	return wj.Replace(s)
 }
@@ -107,12 +107,12 @@ func (m MenuEntry) getTable() map[string]string {
 	return map[string]string{
 		"MM-dd":            "01-02",
 		"MM/dd":            "01/02",
-		"MM月dd日（aaa）":      "01月02日（Mon）",
-		"M月d日（aaa）":        "1月2日（Mon）",
+		"MM月dd日（aaa）":      "01月02日（Monday）",
+		"M月d日（aaa）":        "1月2日（Monday）",
 		"YYYY-MM-dd":       "2006-01-02",
 		"YYYY/MM/dd":       "2006/01/02",
-		"YYYY年MM月dd日（aaa）": "2006年01月02日（Mon）",
-		"YYYY年M月d日（aaa）":   "2006年1月2日（Mon）",
+		"YYYY年MM月dd日（aaa）": "2006年01月02日（Monday）",
+		"YYYY年M月d日（aaa）":   "2006年1月2日（Monday）",
 	}
 }
 
