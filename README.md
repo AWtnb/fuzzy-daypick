@@ -1,3 +1,3 @@
 # README
 
-fuzzy-finder for date string.
+fuzzy-picker for date string.
