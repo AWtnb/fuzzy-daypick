@@ -49,6 +49,7 @@ func run(year int, month int, day int, span int) int {
 		}
 		return 0
 	}
+	sort.Ints(idxs)
 	var selected []time.Time
 	for _, i := range idxs {
 		selected = append(selected, menu[i])
@@ -73,7 +74,7 @@ func getDayMenu(start time.Time, span int) []time.Time {
 var FormatMap = map[string]string{
 	"MM-dd":       "01-02",
 	"MM/dd":       "01/02",
-	"MM年dd月（ddd）": "01年02月（Mon）",
+	"MM年dd月（ddd）": "01月02日（Mon）",
 }
 
 // type DateEntry struct {
