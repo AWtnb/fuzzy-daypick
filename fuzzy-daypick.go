@@ -38,21 +38,13 @@ func main() {
 
 func run(year int, month int, day int, span int) int {
 	start := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
-	menu := getDayMenu(start, span)
-	idxs, err := fuzzyfinder.FindMulti(menu, func(i int) string {
-		return menu[i].Format("01/02 (Mon)")
-	})
+	dm := DateMenu{start: start, span: span}
+	selected, err := dm.selectDate()
 	if err != nil {
 		if err != fuzzyfinder.ErrAbort {
-			fmt.Printf("ERROR: %s\n", err)
 			return 1
 		}
 		return 0
-	}
-	sort.Ints(idxs)
-	var selected []time.Time
-	for _, i := range idxs {
-		selected = append(selected, menu[i])
 	}
 	me := MenuEntry{selected}
 	df := me.preview()
@@ -64,12 +56,33 @@ func run(year int, month int, day int, span int) int {
 	return 0
 }
 
-func getDayMenu(start time.Time, span int) []time.Time {
+type DateMenu struct {
+	start time.Time
+	span  int
+}
+
+func (d DateMenu) getMenu() []time.Time {
 	var ts []time.Time
-	for i := 0; i < span; i++ {
-		ts = append(ts, start.AddDate(0, 0, i))
+	for i := 0; i < d.span; i++ {
+		ts = append(ts, d.start.AddDate(0, 0, i))
 	}
 	return ts
+}
+
+func (d DateMenu) selectDate() ([]time.Time, error) {
+	menu := d.getMenu()
+	idxs, err := fuzzyfinder.FindMulti(menu, func(i int) string {
+		return menu[i].Format("01/02 (Mon)")
+	})
+	if err != nil {
+		return []time.Time{}, err
+	}
+	sort.Ints(idxs)
+	var selected []time.Time
+	for _, i := range idxs {
+		selected = append(selected, menu[i])
+	}
+	return selected, nil
 }
 
 type MenuEntry struct {
