@@ -36,6 +36,19 @@ func main() {
 	os.Exit(run(year, month, day, span))
 }
 
+func toJpDate(s string) string {
+	wj := strings.NewReplacer(
+		"Sun", "日",
+		"Mon", "月",
+		"Tue", "火",
+		"Wed", "水",
+		"Thu", "木",
+		"Fri", "金",
+		"Sat", "土",
+	)
+	return wj.Replace(s)
+}
+
 func run(year int, month int, day int, span int) int {
 	start := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
 	dm := DateMenu{start: start, span: span}
@@ -50,7 +63,8 @@ func run(year int, month int, day int, span int) int {
 	df := me.preview()
 	if 0 < len(df) {
 		for _, d := range selected {
-			fmt.Printf("%v\n", d.Format(df))
+			j := toJpDate(d.Format(df))
+			fmt.Printf("%v\n", j)
 		}
 	}
 	return 0
@@ -93,19 +107,20 @@ func (m MenuEntry) getTable() map[string]string {
 	return map[string]string{
 		"MM-dd":            "01-02",
 		"MM/dd":            "01/02",
-		"MM月dd日（ddd）":      "01月02日（Mon）",
-		"M月d日（ddd）":        "1月2日（Mon）",
+		"MM月dd日（aaa）":      "01月02日（Mon）",
+		"M月d日（aaa）":        "1月2日（Mon）",
 		"YYYY-MM-dd":       "2006-01-02",
 		"YYYY/MM/dd":       "2006/01/02",
-		"YYYY年MM月dd日（ddd）": "2006年01月02日（Mon）",
-		"YYYY年M月d日（ddd）":   "2006年1月2日（Mon）",
+		"YYYY年MM月dd日（aaa）": "2006年01月02日（Mon）",
+		"YYYY年M月d日（aaa）":   "2006年1月2日（Mon）",
 	}
 }
 
 func (m MenuEntry) applyFormat(fmt string) []string {
 	var ss []string
 	for _, d := range m.dates {
-		ss = append(ss, d.Format(fmt))
+		j := toJpDate(d.Format(fmt))
+		ss = append(ss, j)
 	}
 	return ss
 }
