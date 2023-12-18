@@ -23,7 +23,7 @@ func main() {
 	flag.IntVar(&month, "month", 0, "month to start menu")
 	flag.IntVar(&day, "day", 0, "day to start menu")
 	flag.IntVar(&span, "span", 365, "span of date menu")
-	flag.BoolVar(&weekday, "weekday", true, "skip saturday and sunday")
+	flag.BoolVar(&weekday, "weekday", false, "skip saturday and sunday")
 	flag.Parse()
 	now := time.Now()
 	if year < 1 {
