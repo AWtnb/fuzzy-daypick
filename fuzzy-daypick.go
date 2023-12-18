@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AWtnb/fuzzy-daypick/datemenu"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
@@ -53,8 +54,8 @@ func toJpDate(s string) string {
 
 func run(year int, month int, day int, span int, weekday bool) int {
 	start := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
-	dm := DateMenu{start: start, span: span, weekday: weekday}
-	selected, err := dm.selectDate()
+	dm := datemenu.DateMenu{Start: start, Span: span, Weekday: weekday}
+	selected, err := dm.SelectDate()
 	if err != nil {
 		if err != fuzzyfinder.ErrAbort {
 			return 1
@@ -76,40 +77,6 @@ func run(year int, month int, day int, span int, weekday bool) int {
 		}
 	}
 	return 0
-}
-
-type DateMenu struct {
-	start   time.Time
-	span    int
-	weekday bool
-}
-
-func (d DateMenu) getMenu() []time.Time {
-	var ts []time.Time
-	for i := 0; i < d.span; i++ {
-		t := d.start.AddDate(0, 0, i)
-		if d.weekday && (t.Weekday() == time.Saturday || t.Weekday() == time.Sunday) {
-			continue
-		}
-		ts = append(ts, t)
-	}
-	return ts
-}
-
-func (d DateMenu) selectDate() ([]time.Time, error) {
-	menu := d.getMenu()
-	idxs, err := fuzzyfinder.FindMulti(menu, func(i int) string {
-		return menu[i].Format("01/02 (Mon)")
-	})
-	if err != nil {
-		return []time.Time{}, err
-	}
-	sort.Ints(idxs)
-	var selected []time.Time
-	for _, i := range idxs {
-		selected = append(selected, menu[i])
-	}
-	return selected, nil
 }
 
 type MenuEntry struct {
