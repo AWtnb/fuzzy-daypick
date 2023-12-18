@@ -112,12 +112,12 @@ type MenuEntry struct {
 
 func (m MenuEntry) getTable() map[string]string {
 	return map[string]string{
-		"MM/dd（aaa）":       "01/02（Monday）",
-		"MM月dd日（aaa）":      "01月02日（Monday）",
-		"M月d日（aaa）":        "1月2日（Monday）",
-		"YYYY/MM/dd（aaa）":  "2006/01/02（Monday）",
-		"YYYY年MM月dd日（aaa）": "2006年01月02日（Monday）",
-		"YYYY年M月d日（aaa）":   "2006年1月2日（Monday）",
+		"MM月 d日（aaa）": "01月_2日（Monday）",
+		"MM月dd日（aaa）": "01月02日（Monday）",
+		"MM月d日（aaa）":  "01月2日（Monday）",
+		"M月 d日（aaa）":  "1月_2日（Monday）",
+		"M月dd日（aaa）":  "1月02日（Monday）",
+		"M月d日（aaa）":   "1月2日（Monday）",
 	}
 }
 
@@ -130,11 +130,12 @@ func (m MenuEntry) applyFormat(fmt string) []string {
 	return ss
 }
 
-func (m MenuEntry) getCommonFormats() []string {
+func (m MenuEntry) getMenuKeys() []string {
 	var ss []string
 	for f := range m.getTable() {
 		ss = append(ss, f)
 	}
+	sort.Strings(ss)
 	return ss
 }
 
@@ -143,7 +144,7 @@ func (m MenuEntry) toGoFormat(commonFmt string) string {
 }
 
 func (m MenuEntry) preview() string {
-	fmts := m.getCommonFormats()
+	fmts := m.getMenuKeys()
 	idx, err := fuzzyfinder.Find(fmts, func(i int) string {
 		return fmts[i]
 	}, fuzzyfinder.WithPreviewWindow(func(i, _, _ int) string {
