@@ -4,10 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"sort"
-	"strings"
 	"time"
 
+	"github.com/AWtnb/fuzzy-daypick/datelines"
 	"github.com/AWtnb/fuzzy-daypick/datemenu"
 	"github.com/AWtnb/fuzzy-daypick/menuentry"
 	"github.com/ktr0731/go-fuzzyfinder"
@@ -54,63 +53,11 @@ func run(year int, month int, day int, span int, weekday bool) int {
 	df := me.Preview()
 	if 0 < len(df) {
 		ss := menuentry.ToLines(selected, df)
-		dl := DateLines{lines: ss}
-		f := dl.selectPrefix()
+		dl := datelines.DateLines{Lines: ss}
+		f := dl.SelectPrefix()
 		for _, s := range ss {
 			fmt.Printf("%s\n", f+s)
 		}
 	}
 	return 0
-}
-
-type DateLines struct {
-	lines []string
-}
-
-func (dl DateLines) getTable() map[string]string {
-	return map[string]string{
-		"(Null)":   "",
-		"dash":     "- ",
-		"bullet":   "・",
-		"2-indent": "  ",
-	}
-}
-
-func (dl DateLines) getMenuKeys() []string {
-	var ss []string
-	for f := range dl.getTable() {
-		ss = append(ss, f)
-	}
-	sort.Strings(ss)
-	return ss
-}
-
-func (dl DateLines) applyPrefix(pre string) []string {
-	var ss []string
-	for _, d := range dl.lines {
-		ss = append(ss, pre+d)
-	}
-	return ss
-}
-
-func (dl DateLines) toPrefix(menuKey string) string {
-	return dl.getTable()[menuKey]
-}
-
-func (dl DateLines) selectPrefix() string {
-	keys := dl.getMenuKeys()
-	idx, err := fuzzyfinder.Find(keys, func(i int) string {
-		return keys[i]
-	}, fuzzyfinder.WithPreviewWindow(func(i, _, _ int) string {
-		if i == -1 {
-			return ""
-		}
-		p := dl.toPrefix(keys[i])
-		return strings.Join(dl.applyPrefix(p), "\n")
-	}))
-	if err != nil {
-		fmt.Println(err)
-		return ""
-	}
-	return dl.toPrefix(keys[idx])
 }
