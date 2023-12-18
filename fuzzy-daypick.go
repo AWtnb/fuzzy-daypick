@@ -13,15 +13,17 @@ import (
 
 func main() {
 	var (
-		year  int
-		month int
-		day   int
-		span  int
+		year    int
+		month   int
+		day     int
+		span    int
+		weekday bool
 	)
 	flag.IntVar(&year, "year", 0, "year to start menu")
 	flag.IntVar(&month, "month", 0, "month to start menu")
 	flag.IntVar(&day, "day", 0, "day to start menu")
-	flag.IntVar(&span, "span", 30, "span of date menu")
+	flag.IntVar(&span, "span", 365, "span of date menu")
+	flag.BoolVar(&weekday, "weekday", true, "skip saturday and sunday")
 	flag.Parse()
 	now := time.Now()
 	if year < 1 {
@@ -33,7 +35,7 @@ func main() {
 	if day < 1 {
 		day = now.Day()
 	}
-	os.Exit(run(year, month, day, span))
+	os.Exit(run(year, month, day, span, weekday))
 }
 
 func toJpDate(s string) string {
@@ -49,9 +51,9 @@ func toJpDate(s string) string {
 	return wj.Replace(s)
 }
 
-func run(year int, month int, day int, span int) int {
+func run(year int, month int, day int, span int, weekday bool) int {
 	start := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
-	dm := DateMenu{start: start, span: span}
+	dm := DateMenu{start: start, span: span, weekday: weekday}
 	selected, err := dm.selectDate()
 	if err != nil {
 		if err != fuzzyfinder.ErrAbort {
@@ -71,14 +73,19 @@ func run(year int, month int, day int, span int) int {
 }
 
 type DateMenu struct {
-	start time.Time
-	span  int
+	start   time.Time
+	span    int
+	weekday bool
 }
 
 func (d DateMenu) getMenu() []time.Time {
 	var ts []time.Time
 	for i := 0; i < d.span; i++ {
-		ts = append(ts, d.start.AddDate(0, 0, i))
+		t := d.start.AddDate(0, 0, i)
+		if d.weekday && (t.Weekday() == time.Saturday || t.Weekday() == time.Sunday) {
+			continue
+		}
+		ts = append(ts, t)
 	}
 	return ts
 }
