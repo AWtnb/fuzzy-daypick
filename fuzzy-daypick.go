@@ -22,7 +22,7 @@ func main() {
 	flag.IntVar(&year, "year", 0, "year to start menu")
 	flag.IntVar(&month, "month", 0, "month to start menu")
 	flag.IntVar(&day, "day", 0, "day to start menu")
-	flag.IntVar(&span, "span", 365, "span of date menu")
+	flag.IntVar(&span, "span", 30, "span of date menu")
 	flag.BoolVar(&weekday, "weekday", false, "skip saturday and sunday")
 	flag.Parse()
 	now := time.Now()
@@ -112,12 +112,10 @@ type MenuEntry struct {
 
 func (m MenuEntry) getTable() map[string]string {
 	return map[string]string{
-		"MM-dd":            "01-02",
-		"MM/dd":            "01/02",
+		"MM/dd（aaa）":       "01/02（Monday）",
 		"MM月dd日（aaa）":      "01月02日（Monday）",
 		"M月d日（aaa）":        "1月2日（Monday）",
-		"YYYY-MM-dd":       "2006-01-02",
-		"YYYY/MM/dd":       "2006/01/02",
+		"YYYY/MM/dd（aaa）":  "2006/01/02（Monday）",
 		"YYYY年MM月dd日（aaa）": "2006年01月02日（Monday）",
 		"YYYY年M月d日（aaa）":   "2006年1月2日（Monday）",
 	}
@@ -137,7 +135,6 @@ func (m MenuEntry) getCommonFormats() []string {
 	for f := range m.getTable() {
 		ss = append(ss, f)
 	}
-	sort.Strings(ss)
 	return ss
 }
 
