@@ -3,6 +3,7 @@ package menuentry
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,21 +36,27 @@ type MenuEntry struct {
 }
 
 func (m MenuEntry) dayRequirePadding() bool {
+	var ds []int
 	for _, m := range m.Dates {
-		if len(m.Format("2")) < 2 {
-			return true
+		i, err := strconv.Atoi(m.Format("2"))
+		if err == nil {
+			ds = append(ds, i)
 		}
 	}
-	return false
+	sort.Ints(ds)
+	return ds[0] < 10 && 10 <= ds[len(ds)-1]
 }
 
 func (m MenuEntry) monthRequirePadding() bool {
+	var ms []int
 	for _, m := range m.Dates {
-		if len(m.Format("1")) < 2 {
-			return true
+		i, err := strconv.Atoi(m.Format("1"))
+		if err == nil {
+			ms = append(ms, i)
 		}
 	}
-	return false
+	sort.Ints(ms)
+	return ms[0] < 10 && 10 <= ms[len(ms)-1]
 }
 
 func (m MenuEntry) getTable() map[string]string {
