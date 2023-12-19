@@ -2,7 +2,7 @@ package datelines
 
 import (
 	"fmt"
-	"sort"
+	"slices"
 	"strings"
 
 	"github.com/ktr0731/go-fuzzyfinder"
@@ -27,7 +27,7 @@ func (dl DateLines) getMenuKeys() []string {
 	for f := range dl.getTable() {
 		ss = append(ss, f)
 	}
-	sort.Strings(ss)
+	slices.Sort(ss)
 	return ss
 }
 

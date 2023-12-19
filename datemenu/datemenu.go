@@ -1,7 +1,7 @@
 package datemenu
 
 import (
-	"sort"
+	"slices"
 	"time"
 
 	"github.com/ktr0731/go-fuzzyfinder"
@@ -33,7 +33,7 @@ func (d DateMenu) SelectDate() ([]time.Time, error) {
 	if err != nil {
 		return []time.Time{}, err
 	}
-	sort.Ints(idxs)
+	slices.Sort(idxs)
 	var selected []time.Time
 	for _, i := range idxs {
 		selected = append(selected, menu[i])

@@ -2,7 +2,7 @@ package menuentry
 
 import (
 	"fmt"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -43,7 +43,7 @@ func (m MenuEntry) dayRequirePadding() bool {
 			ds = append(ds, i)
 		}
 	}
-	sort.Ints(ds)
+	slices.Sort(ds)
 	return ds[0] < 10 && 10 <= ds[len(ds)-1]
 }
 
@@ -55,7 +55,7 @@ func (m MenuEntry) monthRequirePadding() bool {
 			ms = append(ms, i)
 		}
 	}
-	sort.Ints(ms)
+	slices.Sort(ms)
 	return ms[0] < 10 && 10 <= ms[len(ms)-1]
 }
 
@@ -97,7 +97,7 @@ func (m MenuEntry) getMenuKeys() []string {
 	for f := range m.getTable() {
 		ss = append(ss, f)
 	}
-	sort.Strings(ss)
+	slices.Sort(ss)
 	return ss
 }
 

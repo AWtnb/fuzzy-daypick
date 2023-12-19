@@ -46,6 +46,7 @@ func main() {
 			return
 		}
 		os.Exit(run(year, month, day, span, weekday))
+		return
 	}
 	now := time.Now()
 	if year < 1 {
