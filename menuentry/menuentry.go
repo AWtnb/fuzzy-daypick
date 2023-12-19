@@ -31,46 +31,38 @@ func toJpDate(s string) string {
 	return j
 }
 
+func isPaddable(ns []int) bool {
+	slices.Sort(ns)
+	return ns[0] < 10 && 10 <= ns[len(ns)-1]
+}
+
 type MenuEntry struct {
 	Dates []time.Time
 }
 
-func (m MenuEntry) dayRequirePadding() bool {
-	var ds []int
+func (m MenuEntry) toIntSlice(fmt string) []int {
+	var sl []int
 	for _, m := range m.Dates {
-		i, err := strconv.Atoi(m.Format("2"))
+		i, err := strconv.Atoi(m.Format(fmt))
 		if err == nil {
-			ds = append(ds, i)
+			sl = append(sl, i)
 		}
 	}
-	slices.Sort(ds)
-	return ds[0] < 10 && 10 <= ds[len(ds)-1]
-}
-
-func (m MenuEntry) monthRequirePadding() bool {
-	var ms []int
-	for _, m := range m.Dates {
-		i, err := strconv.Atoi(m.Format("1"))
-		if err == nil {
-			ms = append(ms, i)
-		}
-	}
-	slices.Sort(ms)
-	return ms[0] < 10 && 10 <= ms[len(ms)-1]
+	return sl
 }
 
 func (m MenuEntry) getTable() map[string]string {
 	ds := map[string]string{
 		"d日": "2日（Monday）",
 	}
-	if m.dayRequirePadding() {
+	if isPaddable(m.toIntSlice("2")) {
 		ds["dd日"] = "02日（Monday）"
 		ds["_d日"] = "_2日（Monday）"
 	}
 	ms := map[string]string{
 		"M月": "1月",
 	}
-	if m.monthRequirePadding() {
+	if isPaddable(m.toIntSlice("1")) {
 		ms["MM月"] = "01月"
 		ms["_M月"] = "_1月"
 	}
