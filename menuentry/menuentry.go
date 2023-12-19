@@ -31,6 +31,15 @@ func toJpDate(s string) string {
 	return j
 }
 
+func ToLines(dates []time.Time, fmt string) []string {
+	var ss []string
+	for _, d := range dates {
+		j := toJpDate(d.Format(fmt))
+		ss = append(ss, j)
+	}
+	return ss
+}
+
 func isPaddable(ns []int) bool {
 	slices.Sort(ns)
 	return ns[0] < 10 && 10 <= ns[len(ns)-1]
@@ -76,12 +85,7 @@ func (m MenuEntry) getTable() map[string]string {
 }
 
 func (m MenuEntry) applyFormat(fmt string) []string {
-	var ss []string
-	for _, d := range m.Dates {
-		j := toJpDate(d.Format(fmt))
-		ss = append(ss, j)
-	}
-	return ss
+	return ToLines(m.Dates, fmt)
 }
 
 func (m MenuEntry) getMenuKeys() []string {
@@ -113,13 +117,4 @@ func (m MenuEntry) Preview() string {
 		return ""
 	}
 	return m.toGoFormat(fmts[idx])
-}
-
-func ToLines(dates []time.Time, fmt string) []string {
-	var ss []string
-	for _, d := range dates {
-		j := toJpDate(d.Format(fmt))
-		ss = append(ss, j)
-	}
-	return ss
 }
