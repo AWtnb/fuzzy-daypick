@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/AWtnb/fuzzy-daypick/datelines"
@@ -14,18 +15,38 @@ import (
 
 func main() {
 	var (
+		start   string
 		year    int
 		month   int
 		day     int
 		span    int
 		weekday bool
 	)
+	flag.StringVar(&start, "start", "", "start day in yyyyMMdd format")
 	flag.IntVar(&year, "year", 0, "year to start menu")
 	flag.IntVar(&month, "month", 0, "month to start menu")
 	flag.IntVar(&day, "day", 0, "day to start menu")
 	flag.IntVar(&span, "span", 30, "span of date menu")
 	flag.BoolVar(&weekday, "weekday", false, "skip saturday and sunday")
 	flag.Parse()
+	if len(start) == 8 {
+		year, err := strconv.Atoi(start[0:4])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		month, err = strconv.Atoi(start[4:6])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		day, err = strconv.Atoi(start[6:8])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		os.Exit(run(year, month, day, span, weekday))
+	}
 	now := time.Now()
 	if year < 1 {
 		year = now.Year()
