@@ -19,22 +19,61 @@ func toJpDate(s string) string {
 		"Friday", "金",
 		"Saturday", "土",
 	)
-	return wj.Replace(s)
+	j := wj.Replace(s)
+	if strings.HasPrefix(j, "_") {
+		pad := ""
+		if strings.Index(j, "月") == 2 {
+			pad = " "
+		}
+		j = strings.Replace(j, "_", pad, 1)
+	}
+	return j
 }
 
 type MenuEntry struct {
 	Dates []time.Time
 }
 
-func (m MenuEntry) getTable() map[string]string {
-	return map[string]string{
-		"MM月 d日（aaa）": "01月_2日（Monday）",
-		"MM月dd日（aaa）": "01月02日（Monday）",
-		"MM月d日（aaa）":  "01月2日（Monday）",
-		"M月 d日（aaa）":  "1月_2日（Monday）",
-		"M月dd日（aaa）":  "1月02日（Monday）",
-		"M月d日（aaa）":   "1月2日（Monday）",
+func (m MenuEntry) dayRequirePadding() bool {
+	for _, m := range m.Dates {
+		if len(m.Format("2")) < 2 {
+			return true
+		}
 	}
+	return false
+}
+
+func (m MenuEntry) monthRequirePadding() bool {
+	for _, m := range m.Dates {
+		if len(m.Format("1")) < 2 {
+			return true
+		}
+	}
+	return false
+}
+
+func (m MenuEntry) getTable() map[string]string {
+	ds := map[string]string{
+		"d日": "2日（Monday）",
+	}
+	if m.dayRequirePadding() {
+		ds["dd日"] = "02日（Monday）"
+		ds["_d日"] = "_2日（Monday）"
+	}
+	ms := map[string]string{
+		"M月": "1月",
+	}
+	if m.monthRequirePadding() {
+		ms["MM月"] = "01月"
+		ms["_M月"] = "_1月"
+	}
+	mp := map[string]string{}
+	for km, vm := range ms {
+		for kd, vd := range ds {
+			mp[km+kd] = vm + vd
+		}
+	}
+	return mp
 }
 
 func (m MenuEntry) applyFormat(fmt string) []string {
