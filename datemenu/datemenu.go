@@ -28,7 +28,7 @@ func (d DateMenu) getMenu() []time.Time {
 func (d DateMenu) SelectDate() ([]time.Time, error) {
 	menu := d.getMenu()
 	idxs, err := fuzzyfinder.FindMulti(menu, func(i int) string {
-		return menu[i].Format("01/02 (Mon)")
+		return menu[i].Format("Jan._2 Mon")
 	})
 	if err != nil {
 		return []time.Time{}, err
