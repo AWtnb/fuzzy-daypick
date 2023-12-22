@@ -29,7 +29,18 @@ func main() {
 	flag.IntVar(&span, "span", 30, "span of date menu")
 	flag.BoolVar(&weekday, "weekday", false, "skip saturday and sunday")
 	flag.Parse()
-	if len(start) == 8 {
+	ln := len(start)
+	if 4 <= ln {
+		switch ln {
+		case 4:
+			start = fmt.Sprintf("%s0101", start)
+		case 5:
+			start = fmt.Sprintf("%s0%s01", start[0:4], start[4:5])
+		case 6:
+			start = fmt.Sprintf("%s01", start)
+		case 7:
+			start = fmt.Sprintf("%s0%s", start[0:6], start[6:7])
+		}
 		year, err := strconv.Atoi(start[0:4])
 		if err != nil {
 			fmt.Println(err)
@@ -49,14 +60,18 @@ func main() {
 		return
 	}
 	now := time.Now()
+	if year < 1 && month < 1 && day < 1 {
+		os.Exit(run(now.Year(), int(now.Month()), now.Day(), span, weekday))
+		return
+	}
 	if year < 1 {
 		year = now.Year()
 	}
 	if month < 1 {
-		month = int(now.Month())
+		month = 1
 	}
 	if day < 1 {
-		day = now.Day()
+		day = 1
 	}
 	os.Exit(run(year, month, day, span, weekday))
 }
