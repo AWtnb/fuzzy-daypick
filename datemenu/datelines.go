@@ -1,4 +1,4 @@
-package datelines
+package datemenu
 
 import (
 	"fmt"

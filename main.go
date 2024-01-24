@@ -7,9 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/AWtnb/fuzzy-daypick/datelines"
 	"github.com/AWtnb/fuzzy-daypick/datemenu"
-	"github.com/AWtnb/fuzzy-daypick/menuentry"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
@@ -86,11 +84,11 @@ func run(year int, month int, day int, span int, weekday bool) int {
 		}
 		return 0
 	}
-	me := menuentry.MenuEntry{Dates: selected}
+	me := datemenu.MenuEntry{Dates: selected}
 	df := me.Preview()
 	if 0 < len(df) {
-		ss := menuentry.ToLines(selected, df)
-		dl := datelines.DateLines{Lines: ss}
+		ss := datemenu.ToLines(selected, df)
+		dl := datemenu.DateLines{Lines: ss}
 		f := dl.SelectPrefix()
 		for _, s := range ss {
 			fmt.Printf("%s\n", f+s)

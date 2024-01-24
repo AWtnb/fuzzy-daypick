@@ -1,4 +1,4 @@
-package menuentry
+package datemenu
 
 import (
 	"fmt"
