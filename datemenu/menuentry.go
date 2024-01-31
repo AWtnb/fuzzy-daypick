@@ -3,6 +3,7 @@ package datemenu
 import (
 	"fmt"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -45,33 +46,52 @@ func isPaddable(ns []int) bool {
 	return ns[0] < 10 && 10 <= ns[len(ns)-1]
 }
 
+func isSingleMonth(ts []time.Time) bool {
+	sort.Slice(ts, func(i int, j int) bool {
+		return ts[i].Before(ts[j])
+	})
+	return ts[0].Month() == ts[len(ts)-1].Month()
+}
+
 type MenuEntry struct {
 	Dates []time.Time
 }
 
-func (m MenuEntry) toIntSlice(fmt string) []int {
-	var sl []int
+func (m MenuEntry) months() (ms []int) {
 	for _, m := range m.Dates {
-		i, err := strconv.Atoi(m.Format(fmt))
+		i, err := strconv.Atoi(m.Format("1"))
 		if err == nil {
-			sl = append(sl, i)
+			ms = append(ms, i)
 		}
 	}
-	return sl
+	return
+}
+
+func (m MenuEntry) days() (ds []int) {
+	for _, m := range m.Dates {
+		i, err := strconv.Atoi(m.Format("2"))
+		if err == nil {
+			ds = append(ds, i)
+		}
+	}
+	return
 }
 
 func (m MenuEntry) getTable() map[string]string {
 	ds := map[string]string{
 		"d日": "2日（Monday）",
 	}
-	if isPaddable(m.toIntSlice("2")) {
+	if isPaddable(m.days()) {
 		ds["dd日"] = "02日（Monday）"
 		ds["_d日"] = "_2日（Monday）"
+	}
+	if isSingleMonth(m.Dates) {
+		return ds
 	}
 	ms := map[string]string{
 		"M月": "1月",
 	}
-	if isPaddable(m.toIntSlice("1")) {
+	if isPaddable(m.months()) {
 		ms["MM月"] = "01月"
 		ms["_M月"] = "_1月"
 	}
