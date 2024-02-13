@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/AWtnb/fuzzy-daypick/datemenu"
-	"github.com/ktr0731/go-fuzzyfinder"
 )
 
 func main() {
@@ -79,10 +78,7 @@ func run(year int, month int, day int, span int, weekday bool) int {
 	dm := datemenu.DateMenu{Start: start, Span: span, Weekday: weekday}
 	selected, err := dm.SelectDate()
 	if err != nil {
-		if err != fuzzyfinder.ErrAbort {
-			return 1
-		}
-		return 0
+		return 1
 	}
 	me := datemenu.MenuEntry{Dates: selected}
 	df := me.Preview()
