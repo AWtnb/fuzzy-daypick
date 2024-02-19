@@ -3,7 +3,6 @@ package datemenu
 import (
 	"fmt"
 	"slices"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -46,13 +45,6 @@ func isPaddable(ns []int) bool {
 	return ns[0] < 10 && 10 <= ns[len(ns)-1]
 }
 
-func isSingleMonth(ts []time.Time) bool {
-	sort.Slice(ts, func(i int, j int) bool {
-		return ts[i].Before(ts[j])
-	})
-	return ts[0].Month() == ts[len(ts)-1].Month()
-}
-
 type MenuEntry struct {
 	Dates []time.Time
 }
@@ -84,9 +76,6 @@ func (m MenuEntry) getTable() map[string]string {
 	if isPaddable(m.days()) {
 		ds["dd日"] = "02日（Monday）"
 		ds["_d日"] = "_2日（Monday）"
-	}
-	if isSingleMonth(m.Dates) {
-		return ds
 	}
 	ms := map[string]string{
 		"M月": "1月",
@@ -123,6 +112,9 @@ func (m MenuEntry) toGoFormat(commonFmt string) string {
 
 func (m MenuEntry) Preview() string {
 	fmts := m.getMenuKeys()
+	if len(fmts) == 1 {
+		return m.toGoFormat(fmts[0])
+	}
 	idx, err := fuzzyfinder.Find(fmts, func(i int) string {
 		return fmts[i]
 	}, fuzzyfinder.WithPreviewWindow(func(i, _, _ int) string {
