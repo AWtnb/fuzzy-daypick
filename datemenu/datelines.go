@@ -53,7 +53,7 @@ func (dl DateLines) SelectPrefix() string {
 		}
 		p := dl.toPrefix(keys[i])
 		return strings.Join(dl.applyPrefix(p), "\n")
-	}))
+	}), fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop))
 	if err != nil {
 		fmt.Println(err)
 		return ""

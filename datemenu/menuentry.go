@@ -123,7 +123,7 @@ func (m MenuEntry) Preview() string {
 		}
 		f := m.toGoFormat(fmts[i])
 		return strings.Join(m.applyFormat(f), "\n")
-	}))
+	}), fuzzyfinder.WithCursorPosition(fuzzyfinder.CursorPositionTop))
 	if err != nil {
 		fmt.Println(err)
 		return ""
